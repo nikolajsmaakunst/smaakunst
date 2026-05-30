@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keramik — Småkunst</title>
+<meta name="description" content="Håndlavet keramik fra Småkunst — krus, kopper, vaser og fade, formet med omtanke. Hver ting er unik.">
+
+<meta property="og:title" content="Keramik — Småkunst">
+<meta property="og:description" content="Håndlavet keramik til hverdag og fest. Krus, kopper, vaser og fade, formet med omtanke.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="da_DK">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="site-inner">
+    <a class="logo" href="index.html"><span class="dot"></span>Småkunst</a>
+    <nav class="site-nav">
+      <a href="plakater.html">Plakater</a>
+      <a href="keramik.html" class="active">Keramik</a>
+      <a href="about.html">Om os</a>
+    </nav>
+    <button class="cart-link" onclick="go('cart')">
+      Kurv <span class="badge" id="cartBadge" style="display:none;">0</span>
+    </button>
+  </div>
+</header>
+
+<main class="wrap" id="app">
+  <div class="loading"><div class="spinner"></div>Henter keramik…</div>
+</main>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Luk">×</button>
+  <img id="lbImg" src="" alt="">
+</div>
+
+<footer class="site">
+  <div class="wrap foot-inner">
+    <a class="insta-link" href="https://www.instagram.com/sofies_smaakunst/" target="_blank" rel="noopener" aria-label="Småkunst på Instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+      </svg>
+    </a>
+  </div>
+</footer>
+
+<script>
+window.SHOP = {
+  category:             'keramik',
+  includeUncategorized: false,
+  defaultName:          'Keramik',
+  hero: {
+    tag:   'Håndlavet keramik · formet med omtanke',
+    title: 'Krus, kopper og <em>vaser</em> med karakter',
+    intro: 'Håndlavet keramik til hverdagens små ritualer og de gode stunder — kopper, krus, vaser og fade, formet i hånden. Hver ting er unik.',
+  },
+  backLabel:     '← Tilbage til al keramik',
+  emptyLead:     'Tag et kig på keramikken — måske er der noget, der skal med hjem.',
+  emptyBtn:      'Se keramikken',
+  ecoNote: {
+    icon: '🤍',
+    text: 'Hver ting er håndlavet, så små forskelle i form og glasur hører med — det er en del af charmen, og grunden til at ingen to er helt ens.',
+  },
+  emptyDataNoun: 'keramik',
+};
+</script>
+<script src="shop.js"></script>
+</body>
+</html>
