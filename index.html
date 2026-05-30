@@ -36,6 +36,11 @@
   <div class="loading"><div class="spinner"></div>Henter plakater…</div>
 </main>
 
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Luk">×</button>
+  <img id="lbImg" src="" alt="">
+</div>
+
 <footer class="site">
   <div class="wrap foot-inner">
     <a class="insta-link" href="https://www.instagram.com/sofies_smaakunst/" target="_blank" rel="noopener" aria-label="Småkunst på Instagram">
@@ -185,7 +190,7 @@ function renderProduct(id) {
   app.innerHTML = `
     <button class="back" onclick="go('shop')">← Tilbage til alle plakater</button>
     <section class="detail">
-      <div class="imgcol reveal">
+      <div class="imgcol reveal ${p.thumb ? 'zoomable' : ''}" id="imgCol" title="${p.thumb ? 'Klik for at forstørre' : ''}">
         ${p.thumb ? `<img id="mainImg" src="${esc(p.thumb)}" alt="${esc(p.name)}">`
                   : `<span class="ph">Billede på vej</span>`}
       </div>
@@ -217,6 +222,7 @@ function renderProduct(id) {
     price.textContent = kr(p.variants[sel].price);
     if (img && p.variants[sel].image_url) img.src = p.variants[sel].image_url;
   }));
+  if (img) document.getElementById('imgCol').addEventListener('click', () => openLightbox(img.src, p.name));
   document.getElementById('addBtn').addEventListener('click', () => addToCart(p.id, p.variants[sel].size));
 }
 
@@ -369,6 +375,25 @@ function renderEmptyData() {
       Tjek at Google Sheets-API-nøglen er sat korrekt i CONFIG, og at arket er delt offentligt (læseadgang).
     </div>`;
 }
+
+/* ---------- Lightbox (forstør produktbillede) ----------------------------- */
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lbImg');
+
+function openLightbox(src, alt) {
+  lbImg.src = src; lbImg.alt = alt || '';
+  lightbox.classList.add('open');
+  lightbox.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  lightbox.classList.remove('open');
+  lightbox.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+// Klik på baggrund eller luk-knap lukker; klik på selve billedet gør ikke.
+lightbox.addEventListener('click', e => { if (e.target !== lbImg) closeLightbox(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
 /* ---------- Opstart ------------------------------------------------------- */
 (async function init() {
