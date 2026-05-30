@@ -1,6 +1,6 @@
-# CLAUDE.md — Småkunst
+# CLAUDE.md
 
-Context for Claude Code. Read this before making changes.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## What this is
 
@@ -10,16 +10,25 @@ educational settings, often with and for children. This is a one-person hobby
 business, not a mass-market operation. Built and maintained by a relative (not Sofie)
 who handles the code; Sofie only ever touches the separate admin tool.
 
-## Architecture (the important part)
+## Architecture
 
-This is a **fully static site** — a single `index.html` with no backend, no build
-step, no frameworks. Vanilla HTML, CSS, and JS only. Keep it that way unless there's
-a strong reason not to.
+This is a **fully static site** — no backend, no build step, no frameworks. Vanilla
+HTML, CSS, and JS only.
+
+**Files:**
+- `index.html` — the shop: product grid, product detail, cart, checkout, and order
+  confirmation. All rendered client-side via hash-based routing.
+- `about.html` — static about page for Sofie and the project.
+- `style.css` — all shared styles used by both pages.
+
+New pages follow the same pattern: link to `style.css` and the Google Fonts already
+loaded there, copy the header/footer from an existing page, add a small inline script
+to sync the cart badge from localStorage if needed.
 
 Data flow:
 
 ```
-Admin tool (separate repo/file)  ──writes──>  Google Sheet  <──reads──  index.html (this site)
+Admin tool (separate repo/file)  ──writes──>  Google Sheet  <──reads──  index.html
 ```
 
 - **Product data lives in a Google Sheet**, not in the code. The site fetches it at
@@ -42,12 +51,17 @@ Sheet ID, API key, owner email, currency.
 - Hosted on **GitHub Pages** from this repo (public repo, `main` branch, root).
 - Deploy = push to `main`. Pages redeploys automatically within ~1 minute.
 - Target custom domain: **smaakunst.dk** (DNS not yet pointed at the time of writing).
+- Use relative links between pages (`about.html`, not `/about.html`) — root-relative
+  paths break on the GitHub Pages subpath before the custom domain is live.
 
 ## Cart & checkout
 
-- Cart is held in **localStorage** (key `smaakunst_cart`), survives reloads.
-- Navigation is hash-based (`#shop`, `#product/<id>`, `#cart`, `#checkout`, `#done`)
-  so it works on static hosting with no routing config.
+- Cart is held in **localStorage** (key `smaakunst_cart`), survives reloads and
+  navigation between pages.
+- Navigation within the shop is hash-based (`#shop`, `#product/<id>`, `#cart`,
+  `#checkout`, `#done`) so it works on static hosting with no routing config.
+- The cart badge on `about.html` is synced via a small inline script at the bottom
+  of that page — not the full shop JS.
 - Checkout currently collects name + email + optional note and opens a pre-filled
   **mailto** to Sofie. There is no payment integration yet.
 
@@ -76,15 +90,15 @@ Sheet ID, API key, owner email, currency.
 
 - Warm cream/off-white backgrounds. Coral accent (`--coral: #E8775A`). Supporting
   leaf-green and soft-sky tones. Full color palette is in CSS variables at the top of
-  the `<style>` block — reuse those variables, don't hardcode new hex values.
-- Fonts: Fraunces (headings, serif) + Nunito Sans (body). Already loaded.
+  `style.css` — reuse those variables, don't hardcode new hex values.
+- Fonts: Fraunces (headings, serif) + Nunito Sans (body). Loaded via Google Fonts in
+  each page's `<head>`; no local copies.
 - Clean, uncluttered layouts. Playful and friendly. Avoid dark, gritty, high-contrast,
   or cold-minimalist aesthetics.
 
 ## Working agreements
 
 - This is a live shop. Show diffs and let the maintainer review before pushing.
-- Keep it a single static file unless there's a clear reason to add files.
 - The API key sits in `index.html` in plain text. This is acceptable *only because*
   it's restricted (Google Cloud: locked to the Sheets API and to the site's domains).
   Never commit any other secret — no service-account JSON, no write-credentials. Those
