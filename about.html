@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Om Småkunst — illustrerede plakater af Sofie</title>
+<meta name="description" content="Historien bag Småkunst — farverige, illustrerede plakater tegnet i hånden af Sofie. Trykt on demand på FSC/PEFC-certificeret papir.">
+
+<meta property="og:title" content="Om Småkunst">
+<meta property="og:description" content="Plakater tegnet med kærlighed i Danmark. Historien bag Sofies lille webshop.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="da_DK">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="site-inner">
+    <a class="logo" href="index.html"><span class="dot"></span>Småkunst</a>
+    <nav class="site-nav">
+      <a href="index.html">Plakater</a>
+      <a href="about.html" class="active">Om os</a>
+    </nav>
+    <a class="cart-link" href="index.html#cart">
+      Kurv <span class="badge" id="cartBadge" style="display:none;">0</span>
+    </a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="about-hero reveal">
+    <h1>Om Småkunst</h1>
+    <p class="lead">Et lille hjørne af verden, hvor tegning og nysgerrighed mødes med omtanke.</p>
+  </section>
+
+  <article class="prose reveal">
+    <h2>Sofie og plakaterne</h2>
+    <p>
+      Småkunst er Sofies projekt — tegnet i hånden, én streg ad gangen.
+      Sofie er pædagog og illustrator, og begge dele er lette at se i arbejdet:
+      motiverne taler til nysgerrighed, til samtale og til de spørgsmål, der opstår,
+      når store og små kigger på de samme farver og ord.
+    </p>
+    <p>
+      Hver plakat handler om noget. Ikke bare pynt — men et billede med en pointe,
+      en farve der fylder rummet med liv, eller et ord der sidder fast på en god måde.
+    </p>
+
+    <div class="divider"></div>
+
+    <h2>Til hjem og institutioner</h2>
+    <p>
+      Plakaterne er lavet til at hænge steder, hvor der er liv:
+      børneværelset, stuen, gangen — og institutioner som vuggestuer, børnehaver og skoler.
+      Motiver der taler til børn, men aldrig ned til dem.
+    </p>
+    <p>
+      De er også til de voksne, der stadig er lidt nysgerrige.
+    </p>
+
+    <div class="divider"></div>
+
+    <h2>Trykt med omtanke</h2>
+    <p>
+      Der ligger intet lager hos Småkunst. Hver plakat trykkes først, når du bestiller den —
+      på FSC/PEFC-certificeret papir, uden overproduktion og uden spild.
+      Det er en bevidst beslutning, og det er vi stolte af.
+    </p>
+    <p>
+      <strong>Skrevet og tegnet med kærlighed i Danmark.</strong>
+    </p>
+
+    <a class="about-cta" href="index.html">Se alle plakater</a>
+  </article>
+</main>
+
+<footer class="site">
+  <div class="wrap foot-inner">
+    <div>Småkunst · plakater af Sofie · trykt on demand på certificeret papir</div>
+    <div>Skrevet og tegnet med kærlighed i Danmark</div>
+  </div>
+</footer>
+
+<script>
+(function() {
+  try {
+    const cart = JSON.parse(localStorage.getItem('smaakunst_cart')) || {};
+    const count = Object.values(cart).reduce((n, l) => n + l.qty, 0);
+    const badge = document.getElementById('cartBadge');
+    if (count > 0 && badge) { badge.textContent = count; badge.style.display = 'inline-flex'; }
+  } catch(e) {}
+})();
+</script>
+</body>
+</html>
