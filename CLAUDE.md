@@ -127,6 +127,13 @@ email, currency.
   each page's `<head>`; no local copies.
 - Clean, uncluttered layouts. Playful and friendly. Avoid dark, gritty, high-contrast,
   or cold-minimalist aesthetics.
+- **Product image boxes are a fixed `50/70` aspect ratio with `object-fit: cover`**
+  (grid cards, front-page miniatures, and the product-detail image). 50×70 is the
+  poster size, so posters fill the frame with no cropping; other types (ceramics)
+  crop to fit the same frame — intentional, decided with the maintainer. The product
+  page also has a click-to-zoom **lightbox** that shows the full uncropped image, so
+  cropping in the frame is never lossy for the customer. We tried `contain` (empty
+  bars) and a framed-mat look (too fussy) and rejected both — don't reintroduce them.
 
 ## Working agreements
 
