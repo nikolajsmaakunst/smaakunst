@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Billedstil — sammenligning (scratch)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  /* ---- kun for denne scratch-side ---- */
+  .cmp-head { padding: 40px 0 8px; }
+  .cmp-head h1 { font-size: 2rem; margin-bottom: 8px; }
+  .cmp-head p { color: var(--ink-soft); max-width: 720px; }
+  .cmp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; padding: 24px 0 90px; align-items: start; }
+  .style-col > h3 { font-size: 1.05rem; margin-bottom: 4px; }
+  .style-col > .sub { color: var(--ink-soft); font-size: 0.85rem; margin-bottom: 16px; min-height: 32px; }
+
+  .tile { background: #fff; border-radius: 4px; box-shadow: var(--shadow); overflow: hidden; margin-bottom: 18px; }
+  .tile .tbody { padding: 12px 14px 16px; }
+  .tile .tbody h4 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 1.05rem; margin-bottom: 4px; }
+  .tile .tbody .price { color: var(--coral-deep); font-weight: 700; font-size: 0.92rem; }
+  .tile .tbody .price small { color: var(--ink-soft); font-weight: 600; }
+  .tile .ph { display: flex; align-items: center; justify-content: center; color: var(--ink-soft);
+              font-size: 0.8rem; aspect-ratio: 4/5; background: var(--cream-deep); }
+
+  /* 1 · Clean cover */
+  .s-cover .thumb { aspect-ratio: 4/5; overflow: hidden; background: var(--cream-deep); }
+  .s-cover .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* 2 · Natural / masonry (boksen følger billedet) */
+  .s-natural .thumb img { width: 100%; height: auto; display: block; }
+
+  /* 3 · Blurred fill */
+  .s-blur .thumb { position: relative; aspect-ratio: 4/5; overflow: hidden; }
+  .s-blur .thumb .bg { position: absolute; inset: 0; background-size: cover; background-position: center;
+                       filter: blur(20px) brightness(1.06); transform: scale(1.2); }
+  .s-blur .thumb img { position: relative; width: 100%; height: 100%; object-fit: contain; display: block; }
+
+  /* 4 · Flat minimal (hvid, ingen skygge, ingen mat) */
+  .s-flat .thumb { aspect-ratio: 4/5; background: #fff; display: flex; align-items: center;
+                   justify-content: center; padding: 12px; overflow: hidden; }
+  .s-flat .thumb img { max-width: 100%; max-height: 100%; display: block; }
+
+  @media (max-width: 1000px) { .cmp-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px)  { .cmp-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="site-inner">
+    <a class="logo" href="index.html"><span class="dot"></span>Småkunst</a>
+    <span style="color:var(--ink-soft); font-size:0.9rem;">billedstil — scratch</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="cmp-head">
+    <h1>Billedstil — sammenligning</h1>
+    <p>Samme produkter vist i fire stilarter. Vælg den, du bedst kan lide (1–4), så anvender jeg den
+       på shoppen og sletter denne side. Midlertidig — ikke linket fra resten af sitet.</p>
+  </section>
+  <div class="cmp-grid" id="cmp">
+    <div class="loading"><div class="spinner"></div>Henter produkter…</div>
+  </div>
+</main>
+
+<script src="catalog.js"></script>
+<script>
+const STYLES = [
+  { key: 'cover',   title: '1 · Clean cover',         sub: 'Fylder feltet, skarp og ensartet — beskærer kanterne en smule.' },
+  { key: 'natural', title: '2 · Natural / masonry',   sub: 'Boksen følger billedet. Intet beskæres; ujævne højder.' },
+  { key: 'blur',    title: '3 · Blurred fill',        sub: 'Helt billede centreret; sløret kopi fylder kanterne.' },
+  { key: 'flat',    title: '4 · Flat minimal',        sub: 'Hvid flade, helt billede, ingen skygge eller mat.' },
+];
+
+function thumbHTML(style, p) {
+  if (!p.thumb) return `<div class="ph">Billede på vej</div>`;
+  const src = esc(p.thumb);
+  if (style === 'blur') {
+    return `<div class="thumb">
+      <div class="bg" style="background-image:url('${src}')"></div>
+      <img src="${src}" alt="${esc(p.name)}" loading="lazy">
+    </div>`;
+  }
+  return `<div class="thumb"><img src="${src}" alt="${esc(p.name)}" loading="lazy"></div>`;
+}
+
+function tileHTML(style, p) {
+  return `<div class="tile">
+    ${thumbHTML(style, p)}
+    <div class="tbody">
+      <h4>${esc(p.name || 'Uden navn')}</h4>
+      <div class="price"><small>fra</small> ${kr(p.min_price)}</div>
+    </div>
+  </div>`;
+}
+
+(async function init() {
+  const cmp = document.getElementById('cmp');
+  let products = [];
+  try { products = await loadProducts(); }
+  catch (err) { console.error(err); cmp.innerHTML = `<p style="color:var(--coral-deep)">Kunne ikke hente produkter.</p>`; return; }
+
+  const sample = products.slice(0, 6);
+  if (!sample.length) { cmp.innerHTML = `<p style="color:var(--ink-soft)">Ingen produkter at vise.</p>`; return; }
+
+  cmp.innerHTML = STYLES.map(s => `
+    <div class="style-col s-${s.key}">
+      <h3>${s.title}</h3>
+      <div class="sub">${s.sub}</div>
+      ${sample.map(p => tileHTML(s.key, p)).join('')}
+    </div>`).join('');
+})();
+</script>
+</body>
+</html>
