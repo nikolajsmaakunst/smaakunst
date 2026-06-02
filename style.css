@@ -190,23 +190,22 @@ footer.site { border-top: 1px solid var(--line); padding: 40px 0; color: var(--i
 .reveal { animation: rise .5s ease backwards; }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
-/* Landing page — category cards */
-.cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px; padding: 20px 0 70px; }
-.cat-card { position: relative; display: flex; flex-direction: column; align-items: flex-start;
-            background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
-            padding: 40px 34px; box-shadow: var(--shadow); overflow: hidden;
-            transition: transform .2s ease, box-shadow .2s ease; }
-.cat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lift); }
-.cat-card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 6px; }
-.cat-plakater::before { background: var(--coral); }
-.cat-keramik::before { background: var(--leaf); }
-.cat-card .cat-emoji { font-size: 2.6rem; margin-bottom: 14px; }
-.cat-card h2 { font-size: 1.8rem; margin-bottom: 10px; }
-.cat-card p { color: var(--ink-soft); font-size: 1.02rem; margin-bottom: 22px; }
-.cat-card .cat-go { margin-top: auto; font-weight: 700; color: var(--coral-deep);
-                    transition: gap .15s ease; }
-.cat-keramik .cat-go { color: var(--leaf); }
+/* Landing page — category showcase rows */
+.cat-section { padding: 10px 0 40px; }
+.cat-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+            margin-bottom: 20px; }
+.cat-head h2 { font-size: 1.7rem; }
+.cat-seeall { font-weight: 700; color: var(--coral-deep); white-space: nowrap; font-size: 0.95rem;
+              transition: color .15s ease; }
+.cat-seeall:hover { color: var(--coral); }
+.showcase { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 1fr);
+            gap: 24px; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x proximity; }
+.showcase .card { scroll-snap-align: start; }
+.showcase-empty { color: var(--ink-soft); font-size: 1rem; padding: 8px 0 16px; }
+
+@media (max-width: 560px) {
+  .showcase { grid-auto-columns: minmax(160px, 70%); gap: 16px; }
+}
 
 /* About page */
 .about-hero { padding: 70px 0 24px; text-align: center; }

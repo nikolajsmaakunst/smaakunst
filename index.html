@@ -40,20 +40,9 @@
     <p>Sofies lille hjørne af verden — farverige, illustrerede plakater og håndlavet keramik, lavet med omtanke for de små og for alle os, der stadig er nysgerrige.</p>
   </section>
 
-  <section class="cat-grid reveal">
-    <a class="cat-card cat-plakater" href="plakater.html">
-      <div class="cat-emoji">🎨</div>
-      <h2>Plakater</h2>
-      <p>Illustrerede plakater til væggen — trykt on demand, når du bestiller.</p>
-      <span class="cat-go">Se plakaterne →</span>
-    </a>
-    <a class="cat-card cat-keramik" href="keramik.html">
-      <div class="cat-emoji">🏺</div>
-      <h2>Keramik</h2>
-      <p>Håndlavede krus, kopper, vaser og fade — hver ting er unik.</p>
-      <span class="cat-go">Se keramikken →</span>
-    </a>
-  </section>
+  <div id="home">
+    <div class="loading"><div class="spinner"></div>Henter udvalget…</div>
+  </div>
 
   <section class="reveal" style="max-width:640px; margin: 10px auto 90px; text-align:center; padding: 0 8px;">
     <h2 style="font-size:1.9rem; margin-bottom:16px;">Om Småkunst</h2>
@@ -77,16 +66,7 @@
   </div>
 </footer>
 
-<script>
-// Synk kurv-badge fra localStorage (landing-siden indlæser ikke shop.js).
-(function() {
-  try {
-    const cart = JSON.parse(localStorage.getItem('smaakunst_cart')) || {};
-    const count = Object.values(cart).reduce((n, l) => n + l.qty, 0);
-    const badge = document.getElementById('cartBadge');
-    if (count > 0 && badge) { badge.textContent = count; badge.style.display = 'inline-flex'; }
-  } catch(e) {}
-})();
-</script>
+<script src="catalog.js"></script>
+<script src="home.js"></script>
 </body>
 </html>

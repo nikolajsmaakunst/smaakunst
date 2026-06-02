@@ -2,25 +2,17 @@
    Småkunst — delt shop-motor
    Bruges af alle produktsider (plakater.html, keramik.html, …). Hver side sætter
    et globalt SHOP-objekt FØR dette script indlæses, der bestemmer kategori og
-   den kategori-specifikke tekst. Resten — kurv, checkout, datahentning, lightbox
+   den kategori-specifikke tekst. Resten — kurv, checkout, produktvisning, lightbox
    — er fælles.
 
-   Læser produkter fra et offentligt Google Sheet, holder kurv i localStorage,
-   og samler bestillingen via en mailto-besked til Sofie.
+   Forudsætter at catalog.js er indlæst først (CONFIG, kr, esc, loadProducts).
+   Holder kurv i localStorage og samler bestillingen via en mailto-besked til Sofie.
    Stripe kan kobles på senere — se kommentaren ved checkout().
 
    Produkter filtreres på Products-arkets `category`-kolonne (fx 'plakat' /
    'keramik'). Sider med includeUncategorized:true viser også produkter uden
    kategori (så eksisterende plakater stadig vises, før kolonnen er udfyldt).
 ============================================================================ */
-
-/* ---------- Konfiguration ------------------------------------------------- */
-const CONFIG = {
-  sheetId:    '1xRqlwRXiyKWymnxP4s28IGXDTa-2-E-LlOW9wGtlaI8',
-  apiKey:     'AIzaSyArsm9StOFP-nEvR27RAmPD7NjS7WWETxk',          // <- indsæt din Google Sheets API-nøgle
-  ownerEmail: 'nikolaj@smaakunst.dk',         // <- din mailadresse
-  currency:   'kr.',
-};
 
 /* Kategori-specifik opsætning kommer fra den enkelte side (window.SHOP). */
 const SHOP = Object.assign({
@@ -35,10 +27,6 @@ const SHOP = Object.assign({
   emptyDataNoun:        'produkter',
 }, window.SHOP || {});
 
-/* ---------- Hjælpere ------------------------------------------------------ */
-const kr = n => new Intl.NumberFormat('da-DK').format(Math.round(n)) + ' ' + CONFIG.currency;
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
-  ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 const app = document.getElementById('app');
 
 /* ---------- Kurv (localStorage) ------------------------------------------ */
@@ -73,42 +61,14 @@ function removeLine(key) { const c = getCart(); delete c[key]; saveCart(c); rend
 /* ---------- Datahentning -------------------------------------------------- */
 let CATALOG = {};
 
-async function fetchTab(tab) {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.sheetId}/values/${tab}?key=${CONFIG.apiKey}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('Sheet ' + tab + ' svarede ' + res.status);
-  const data = await res.json();
-  const rows = data.values || [];
-  if (rows.length < 2) return [];
-  const headers = rows[0].map(h => String(h).trim());
-  return rows.slice(1).map(r => {
-    const o = {}; headers.forEach((h, i) => o[h] = (r[i] ?? '').toString().trim()); return o;
-  });
-}
-
+// Henter alle produkter (catalog.js) og filtrerer til denne sides kategori.
 async function loadCatalog() {
-  const [products, variants] = await Promise.all([fetchTab('Products'), fetchTab('Variants')]);
-
-  const byProduct = {};
-  variants.forEach(v => {
-    if (!v.product_id) return;
-    v.price = parseFloat(String(v.price).replace(',', '.')) || 0;
-    (byProduct[v.product_id] ||= []).push(v);
-  });
-
   const want = SHOP.category.toLowerCase();
   const catalog = {};
-  products.forEach(p => {
-    if (String(p.available).toUpperCase() !== 'TRUE') return;
-    const cat = String(p.category || '').toLowerCase();
-    const inCategory = cat === want || (!cat && SHOP.includeUncategorized);
+  (await loadProducts()).forEach(p => {
+    const inCategory = p.category === want || (!p.category && SHOP.includeUncategorized);
     if (!inCategory) return;
-    const vs = byProduct[p.id]; if (!vs || !vs.length) return;
-    vs.sort((a, b) => a.price - b.price);
-    catalog[p.id] = {
-      id: p.id, name: p.name || SHOP.defaultName, description: p.description || '',
-      variants: vs, min_price: vs[0].price, thumb: vs[0].image_url || '',
-    };
+    catalog[p.id] = Object.assign({}, p, { name: p.name || SHOP.defaultName });
   });
   return catalog;
 }

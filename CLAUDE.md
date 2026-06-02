@@ -16,23 +16,31 @@ This is a **fully static site** — no backend, no build step, no frameworks. Va
 HTML, CSS, and JS only.
 
 **Files:**
-- `index.html` — landing page. Static; hero + two category cards (Plakater, Keramik)
-  + an about teaser. Does **not** load `shop.js`; just a small inline script to sync
-  the cart badge.
-- `shop.js` — the **shared shop engine**. Catalog loading, product grid, product
-  detail, cart, checkout, order confirmation, and the lightbox. All rendered
-  client-side via hash-based routing. Category-agnostic — driven by config.
+- `catalog.js` — the **shared data layer**. Holds the `CONFIG` object (Sheet ID, API
+  key, owner email, currency), the `kr`/`esc` helpers, and `loadProducts()` (fetches
+  + parses the Sheet, returns all available products with their `category`). Loaded
+  first on every page that touches product data. Single source of truth for config.
+- `index.html` — landing page. Hero + a **showcase row per category** (a random
+  handful of products each, via `home.js`) + an about teaser. Loads `catalog.js` then
+  `home.js`; does not load `shop.js`.
+- `home.js` — landing-page script. Reads `HOME_CATEGORIES`, calls `loadProducts()`,
+  and renders one `.cat-section` per category with `SHOWCASE_COUNT` random products
+  (cards link straight to `<page>.html#product/<id>`). Also syncs the cart badge.
+- `shop.js` — the **shared shop engine**. Product grid, product detail, cart, checkout,
+  order confirmation, and the lightbox. All rendered client-side via hash-based
+  routing. Category-agnostic — driven by config. Depends on `catalog.js` (loaded
+  first); `loadCatalog()` filters `loadProducts()` to the page's category.
 - `plakater.html`, `keramik.html` — thin per-category shop shells. Each sets a global
   `window.SHOP` config object (category + category-specific copy) **before** loading
-  `shop.js`, then includes it.
+  `catalog.js` then `shop.js`.
 - `about.html` — static about page for Sofie and the project.
 - `style.css` — all shared styles used by every page.
 
 **Adding a new product type** (the scalable path): create `<type>.html` by copying an
 existing shop shell, change the `window.SHOP` config (category, hero copy, labels,
-optional `ecoNote`), add a card to `index.html`'s `.cat-grid`, add a nav link to every
-page's header, and tag the products with that `category` value in the Sheet. No
-changes to `shop.js` needed.
+optional `ecoNote`), add an entry to `HOME_CATEGORIES` in `home.js` so it gets a
+front-page row, add a nav link to every page's header, and tag the products with that
+`category` value in the Sheet. No changes to `shop.js` or `catalog.js` needed.
 
 `window.SHOP` fields: `category` (must match the Sheet's `category` value),
 `includeUncategorized` (true only for `plakater.html`, so legacy posters with a blank
@@ -43,7 +51,9 @@ inline HTML like `<em>`), `backLabel`, `emptyLead`, `emptyBtn`, `ecoNote`
 Data flow:
 
 ```
-Admin tool (separate repo/file)  ──writes──>  Google Sheet  <──reads──  shop.js
+Admin tool (separate repo/file)  ──writes──>  Google Sheet  <──reads──  catalog.js
+                                                                          ├─> shop.js  (product pages)
+                                                                          └─> home.js  (landing rows)
 ```
 
 - **Product data lives in a Google Sheet**, not in the code. The site fetches it at
@@ -65,7 +75,7 @@ Admin tool (separate repo/file)  ──writes──>  Google Sheet  <──reads
   mix posters and ceramics. Cart lines store their own name/size/price/image at
   add-time, so the cart and checkout work even though each page's catalog is filtered.
 
-Config lives at the top of `shop.js` (`CONFIG` object): Sheet ID, API key, owner
+Config lives at the top of `catalog.js` (`CONFIG` object): Sheet ID, API key, owner
 email, currency.
 
 ## Hosting & deploy
@@ -82,8 +92,8 @@ email, currency.
   navigation between pages.
 - Navigation within the shop is hash-based (`#shop`, `#product/<id>`, `#cart`,
   `#checkout`, `#done`) so it works on static hosting with no routing config.
-- On static pages without `shop.js` (`index.html`, `about.html`), the cart badge is
-  synced via a small inline script at the bottom of the page.
+- Pages that don't load `shop.js` sync the cart badge themselves: `home.js` does it on
+  the landing page, and `about.html` via a small inline script.
 - Checkout currently collects name + email + optional note and opens a pre-filled
   **mailto** to Sofie. There is no payment integration yet.
 
@@ -121,7 +131,7 @@ email, currency.
 ## Working agreements
 
 - This is a live shop. Show diffs and let the maintainer review before pushing.
-- The API key sits in `shop.js` in plain text. This is acceptable *only because*
+- The API key sits in `catalog.js` in plain text. This is acceptable *only because*
   it's restricted (Google Cloud: locked to the Sheets API and to the site's domains).
   Never commit any other secret — no service-account JSON, no write-credentials. Those
   belong only to the separate admin tool, never here.
