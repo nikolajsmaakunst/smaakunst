@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# Sitemap added once the custom domain (smaakunst.dk) is live — see roadmap Phase 2.
